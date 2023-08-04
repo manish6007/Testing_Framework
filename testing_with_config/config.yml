@@ -1,0 +1,24 @@
+# config.yml
+AWS:
+  aws_access_key_id: <<aws_access_key_id>>
+  aws_secret_access_key: <<aws_secret_access_key>>
+
+Comparison:
+  ora_user: <<Oracle user name>>
+  ora_pwd: <<Oracle password>>
+  ora_tab_name: <<Oracle Table Name>>
+  host: <<Oracle Host>>
+  port: <<Oracle Port>>
+  service_name: <<Oracle SID>>
+  region: <<AWS Region>>
+  athena_db: <<AWS Athena Database>>
+  athena_table: <<AWS Athena table>>
+  output_location: <<AWS S3 output location>>
+  report_location: <<Report target location>>
+  file_path: <<Path of the files to be compared>>
+  redshift_user: <<Redshift User>>
+  redshift_pwd: <<Redshift Password>>
+  redshift_tab_name: <<Redshift Table>>
+  redshift_host: <<Redshift Host>>
+  redshift_port: <<Redshift Port>>
+  redshift_db: <<Redshift Databse>>
