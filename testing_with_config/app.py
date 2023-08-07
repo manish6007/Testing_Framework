@@ -17,7 +17,8 @@ def generate_comparison_report():
                                 "2. Oracle vs Athena datatype comparison. \n "
                                 "3. Oracle vs Athena Field Name comparison. \n "
                                 "4. Oracle vs Athena Data comparison. \n "
-                                "5. Oracle vs Redshift datatype comparison. \n"))
+                                "5. Oracle vs Redshift datatype comparison. \n"
+                                "6. Oracle vs Redshift Field Name comparison. \n"))
     report_format = input("Please enter the format in which you want the report CSV/EXCEL/HTML: ")
     while True:
         if report_format.upper() in ["CSV", "EXCEL", "HTML"]:
@@ -76,11 +77,18 @@ def generate_comparison_report():
         oracle_datatypes = convert_oracle_output_to_dict(
             get_oracle_columns_and_datatypes(ora_user, ora_pwd, host, port, service_name, ora_tab_name))
         df = compare_oracle_redshift_datatypes(redshift_datatypes, oracle_datatypes)
+
+    elif comparison_type == 6:
+        redshift_field_names = get_redshift_field_names(redshift_host, redshift_port, redshift_db, redshift_user, redshift_pwd, redshift_tab_name)
+        oracle_field_names = get_oracle_field_names(ora_user, ora_pwd, host, port,
+                                                    service_name, ora_tab_name)
+        df = compare_field_names(oracle_field_names, redshift_field_names)
+
     else:
         print("Invalid comparison type.")
         return
 
-    if comparison_type == 1 or comparison_type == 3 or comparison_type == 4 or comparison_type == 5:
+    if comparison_type == 1 or comparison_type == 3 or comparison_type == 4 or comparison_type == 6:
         if comparison_type == 5:
             if report_format.upper() == "CSV":
                 generate_csv_report(df, f"{report_location}/RS_VS_ORACLE_DTYPE_COMPARISON_{ora_tab_name}.csv")
@@ -100,6 +108,17 @@ def generate_comparison_report():
                 generate_html_report(df, f"{report_location}/ATHENA_VS_ORACLE_FIELDS_COMPARISON_{ora_tab_name}.html")
             else:
                 print("Invalid report format.")
+
+        elif comparison_type == 6:
+            if report_format.upper() == "CSV":
+                generate_csv_report(df, f"{report_location}/REDSHIFT_VS_ORACLE_FIELDS_COMPARISON_{ora_tab_name}.csv")
+            elif report_format.upper() == "Excel":
+                generate_excel_report(df, f"{report_location}/REDSHIFT_VS_ORACLE_FIELDS_COMPARISON_{ora_tab_name}.xlsx")
+            elif report_format.upper() == "HTML":
+                generate_html_report(df, f"{report_location}/REDSHIFT_VS_ORACLE_FIELDS_COMPARISON_{ora_tab_name}.html")
+            else:
+                print("Invalid report format.")
+
         else:
             if report_format.upper() == "CSV":
                 generate_csv_report(df, f"{report_location}/comparison_report_{ora_tab_name}.csv")

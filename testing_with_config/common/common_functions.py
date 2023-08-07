@@ -561,6 +561,7 @@ def create_dataframe_from_athena_table(region, database, table, output_location,
 
     return df
 
+
 #################################################################
 # Oracle Athena Field Name Comparison
 #################################################################
@@ -613,26 +614,48 @@ def get_athena_field_names(region, database, athena_table):
     return fields
 
 
-def compare_field_names(oracle_field_names, athena_field_names):
-    all_columns = oracle_field_names + athena_field_names
+def compare_field_names(oracle_field_names, other_db_field_names):
+    all_columns = oracle_field_names + other_db_field_names
     full_set = set(all_columns)
 
     result_rows = []
     for field in list(full_set):
 
         if field in oracle_field_names:
-            if field in athena_field_names:
+            if field in other_db_field_names:
                 result_rows.append((field, True, True))
 
         if field in oracle_field_names:
-            if field not in athena_field_names:
+            if field not in other_db_field_names:
                 result_rows.append((field, True, False))
 
-        if field in athena_field_names:
-            print(f"dd{field}")
+        if field in other_db_field_names:
             if field not in oracle_field_names:
-                print(f"dd{field}")
                 result_rows.append((field, False, True))
 
     result_df = pd.DataFrame(result_rows, columns=["column_name", "oracle", "athena"])
     return result_df
+
+
+def get_redshift_field_names(host, port, dbname, user, password, table_name):
+    connection = psycopg2.connect(
+        host=host,
+        port=port,
+        dbname=dbname,
+        user=user,
+        password=password
+    )
+    cursor = connection.cursor()
+
+    try:
+        # Get column names from the specified table
+        query = f"SELECT column_name FROM information_schema.columns WHERE table_name = '{table_name}'"
+        cursor.execute(query)
+
+        redshift_field_names = [row[0].upper() for row in cursor.fetchall()]
+        return redshift_field_names
+    except psycopg2.Error as error:
+        print("Error:", error)
+    finally:
+        cursor.close()
+        connection.close()
