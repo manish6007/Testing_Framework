@@ -560,3 +560,79 @@ def create_dataframe_from_athena_table(region, database, table, output_location,
     df = pd.DataFrame(rows, columns=column_names)
 
     return df
+
+#################################################################
+# Oracle Athena Field Name Comparison
+#################################################################
+def get_oracle_field_names(username, password, host, port, sid, table_name):
+    connection = cx_Oracle.connect(username, password, f"{host}:{port}/{sid}")
+    cursor = connection.cursor()
+
+    try:
+        # Get column names from the specified table
+        query = f"SELECT column_name FROM all_tab_columns WHERE table_name = '{table_name}'"
+        cursor.execute(query)
+
+        oracle_field_names = [row[0] for row in cursor.fetchall()]
+        return oracle_field_names
+    except cx_Oracle.Error as error:
+        print("Error:", error)
+    finally:
+        cursor.close()
+        connection.close()
+
+
+def get_athena_field_names(region, database, athena_table):
+    """
+    Connects to Athena and retrieves the columns of a specific table.
+
+    Args:
+        region (str): AWS region name.
+        database (str): Athena database name.
+        athena_table (str): Name of the Athena table to retrieve columns from.
+
+    Returns:
+        list: List of Athena column descriptions.
+
+    """
+    # Connect to Athena
+    athena_client = boto3.client('athena', region_name=region)
+
+    # Get the Athena table schema
+    response = athena_client.get_table_metadata(
+        CatalogName='AwsDataCatalog',
+        DatabaseName=database,
+        TableName=athena_table
+    )
+
+    athena_columns = response['TableMetadata']['Columns']
+    fields = []
+    for field in athena_columns:
+        fields.append(field['Name'].upper())
+
+    return fields
+
+
+def compare_field_names(oracle_field_names, athena_field_names):
+    all_columns = oracle_field_names + athena_field_names
+    full_set = set(all_columns)
+
+    result_rows = []
+    for field in list(full_set):
+
+        if field in oracle_field_names:
+            if field in athena_field_names:
+                result_rows.append((field, True, True))
+
+        if field in oracle_field_names:
+            if field not in athena_field_names:
+                result_rows.append((field, True, False))
+
+        if field in athena_field_names:
+            print(f"dd{field}")
+            if field not in oracle_field_names:
+                print(f"dd{field}")
+                result_rows.append((field, False, True))
+
+    result_df = pd.DataFrame(result_rows, columns=["column_name", "oracle", "athena"])
+    return result_df
