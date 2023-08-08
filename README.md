@@ -1,57 +1,53 @@
-# On-Premise to Cloud Testing Framework
+# Testing Framework for Data Comparison
 
-The On-Premise to Cloud Testing Framework is designed to assist in the migration process of an on-premise database to a cloud-based database. The framework includes functionalities to compare data types between the on-premise and cloud databases, as well as create Pandas DataFrames from various data sources.
-
-## Features
-
-- Compare data types between an on-premise database (Oracle) and a specified table.
-- Create Pandas DataFrames from an S3 Parquet file and a PySpark table.
-- Create a Pandas DataFrame from an RDS (Relational Database Service) table.
+This framework serves as a comprehensive solution for comparing datatypes, field names, and data among Oracle, Athena, and Redshift databases, while also facilitating file-to-file comparisons. It accommodates the needs of both single and multiple table comparisons and boasts a flexible feature set for generating diverse styles of comparison reports.
 
 ## Prerequisites
 
-Before using this testing framework, ensure the following dependencies are installed in your Python environment:
+Before using the testing framework, ensure you have the following prerequisites in place:
 
-- `pandas`: To work with Pandas DataFrames.
-- `psycopg2`: To connect to PostgreSQL databases (for creating Pandas DataFrame from RDS table).
-- `cx_Oracle`: To connect to Oracle databases (for comparing data types between RDS and Oracle).
-- `pyspark`: To work with PySpark DataFrames (for creating Pandas DataFrame from Parquet file and PySpark table).
+- Python 3.x
+- Required Python packages: `pandas`, `yaml`
+- AWS credentials configured with appropriate permissions
+- Configuration file (`config.yml`) containing necessary connection and configuration details
 
-## Getting Started
+## Setup and Usage
 
-1. Clone the repository:
+1. Clone the repository and navigate to the root directory.
 
-```bash
-git clone https://github.com/your-username/on-premise-to-cloud-testing-framework.git
-```
+2. Configure the `config.yml` file with your AWS credentials, database connection details, and other required parameters.
 
-2. Install the required Python dependencies:
+3. Run the `generate_comparison_report.py` script using the following command:
 
-```bash
-pip install -r requirements.txt
-```
+    ```
+    python generate_comparison_report.py
+    ```
 
-3. Update the necessary configuration details:
+4. Choose a comparison type from the available options:
 
-   - For comparing data types between RDS and Oracle:
-     - Open `compare_datatypes.py` and update the host, port, service name, username, password, and table name variables with your specific values.
+    - **1. File to File comparison**
+    - **2. Oracle vs Athena datatype comparison**
+    - **3. Oracle vs Athena Field Name comparison**
+    - **4. Oracle vs Athena Data comparison**
+    - **5. Oracle vs Redshift datatype comparison**
+    - **6. Oracle vs Redshift Field Name comparison**
 
-   - For creating Pandas DataFrame from S3 Parquet file and PySpark table:
-     - Open `create_pandas_dataframe.py` and update the S3 Parquet file path and PySpark table name variables with your specific values.
+5. Specify the desired report format (CSV/EXCEL/HTML) for the generated comparison report.
 
-   - For creating Pandas DataFrame from RDS table:
-     - Open `create_pandas_dataframe.py` and update the RDS connection details and table name variables with your specific values.
+6. Follow the on-screen prompts based on the selected comparison type. Provide required inputs such as file names, table names, etc.
 
-4. Execute the desired testing functionality:
+7. Once the comparison is completed, the script will generate a comparison report in the chosen format and save it to the specified report location.
 
-   - For comparing data types between RDS and Oracle:
-     - Run `compare_datatypes.py` to compare data types and display any mismatches found.
+## Report Generation
 
-   - For creating Pandas DataFrame from S3 Parquet file and PySpark table:
-     - Run `create_pandas_dataframe.py` to create a Pandas DataFrame from the S3 Parquet file and PySpark table.
+The framework provides the flexibility to generate comparison reports in different formats based on the selected comparison type. The generated reports will be named appropriately, including relevant details like table names and comparison types.
 
-   - For creating Pandas DataFrame from RDS table:
-     - Run `create_pandas_dataframe.py` to create a Pandas DataFrame from the RDS table.
+### Supported Report Formats
 
+- **CSV**: Comma-separated values format.
+- **Excel**: Excel spreadsheet format.
+- **HTML**: HTML format for web-based viewing.
 
-Enjoy the testing framework and happy migration!
+## Conclusion
+
+This testing framework streamlines the process of comparing datatypes, field names, and data between different database platforms and conducting file-to-file comparisons. By leveraging this framework, you can ensure data consistency and integrity across various sources, aiding in quality assurance efforts.
